@@ -6,7 +6,9 @@ import Control.Exception
 import Data.Char (toLower)
 import System.IO.Error
 import Data.List
---main0 :: IO ()
+import Tokenizer as Tk
+
+main0 :: IO ()
 main0 = do
     args <- getArgs
     if length args > 0 then do
@@ -16,10 +18,13 @@ main0 = do
             ficheros <- listDirectory carpeta
             let prefijo = map ((carpeta ++ "/") ++) ficheros
             contents <- traverse readFile prefijo
-            print contents
+            let train = [Tk.toList (contents!!i) | i <- [0..length contents - 1]]
+            let corpus = [[contents!!i] | i <- [0..length contents - 1]]
+            print corpus
         else
             putStrLn ("El directorio " ++ carpeta ++ " no existe")
     else do
         putStrLn "Debe introducir un directorio existente"
 
 main = main0
+
