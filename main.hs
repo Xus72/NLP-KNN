@@ -1,30 +1,48 @@
 --Importación de librerias
-import System.IO
+import System.IO (readFile, print)
 import System.Environment (getArgs)
-import System.Directory
-import Control.Exception
-import Data.Char (toLower)
-import System.IO.Error
-import Data.List
+import System.Directory (doesDirectoryExist, listDirectory)
 import Tokenizer as Tk
+import System.Directory.Recursive (getFilesRecursive)
+import System.FilePath ((</>), splitDirectories)
+import Control.Monad (filterM)
+import System.Random
 
 main0 :: IO ()
 main0 = do
     args <- getArgs
     if length args > 0 then do
         let carpeta = head args
+        -- Comprobamos si la carpeta existe
         existeCarpeta <- doesDirectoryExist carpeta
+        -- Si existe leemos su contenido
         if existeCarpeta then do
-            ficheros <- listDirectory carpeta
-            let prefijo = map ((carpeta ++ "/") ++) ficheros
-            contents <- traverse readFile prefijo
-            let train = [Tk.toList (contents!!i) | i <- [0..length contents - 1]]
-            let corpus = [[contents!!i] | i <- [0..length contents - 1]]
-            print corpus
+            -- Obtenemos las carpetas que hay dentro de la carpeta principales, que serán nuestras clases
+            clases <- getDirectories carpeta
+            -- Cargamos los ficheros que hay dentro de la carpeta
+            ficheros <- getFilesRecursive carpeta
+            -- Trozeamos el path de los ficheros
+            let pathTrozeado = [splitDirectories (ficheros!!i) | i <- [0..length ficheros - 1]]
+            -- Obtenemos a que carpeta pertenece cada fichero
+            let perteneceA = [(pathTrozeado!!i)!!j | j <- [0..length (pathTrozeado!!0) - 1], i <- [0..length pathTrozeado - 1], (pathTrozeado!!i)!!j == (clases!!0) || (pathTrozeado!!i)!!j == (clases!!1)]
+            -- Creamos el conjunto de entrenamiento con las clases
+            let y_train = [if (perteneceA!!i) == (clases!!0) then 0 else 1 | i <- [0.. length perteneceA - 1]]
+            -- Leemos los ficheros
+            contents <- traverse readFile ficheros
+            -- Creamos el conjunto de entrenamiento
+            let x_train = [Tk.toList (contents!!i) | i <- [0..length contents - 1]]
+            print x_train
+
         else
+            -- Si no existe la carpeta devolvemo un error
             putStrLn ("El directorio " ++ carpeta ++ " no existe")
     else do
+        -- Si no introducimos ningún path, devolvemos un error
         putStrLn "Debe introducir un directorio existente"
 
 main = main0
+
+--Funcion para obtener los directorios de los datos
+getDirectories :: FilePath -> IO [FilePath]
+getDirectories filePath = listDirectory filePath >>= filterM (doesDirectoryExist . (filePath </>))
 
