@@ -4,6 +4,7 @@ module DocVector
 , freqDocInversa
 , pesoEnDocumento
 ,pesosEnDocumento
+, matrizLista
 ) where
 
 import Types
@@ -38,6 +39,16 @@ listaMatriz xss = listArray ((1,1),(m,n)) (concat xss)
     where m = length xss
           n = length (head xss)
 
+separa :: Int -> [a] -> [[a]]
+separa _ [] = []
+separa n xs = take n xs : separa n (drop n xs)
+
+numColumnas:: Num a => Matriz a -> Int
+numColumnas = snd . snd . bounds
+
+matrizLista :: Num a => Matriz a -> [[a]]
+matrizLista p = separa (numColumnas p) (elems p)
+
 --(\acc x -> if (frequencyWordDoc x pal) /= 0 then acc + 1 else acc)
 
 representacionVectorial :: Corpus a -> Matriz a
@@ -46,3 +57,19 @@ representacionVectorial corp = undefined
 removeDuplicates2 = foldl (\seen x -> if x `elem` seen
                                       then seen
                                       else seen ++ [x]) []
+
+--prodEscalar :: Foldable a => Vector a -> Vector a -> a
+prodEscalar :: Floating a => Vector a -> Vector a -> a
+prodEscalar v1 v2 = a/b 
+    where a = sum [i*j | (i,j) <- zip (elems v1) (elems v2)]
+          b = sqrt(sum [i^2 | i <- elems v1]) * sqrt(sum [i^2 | i <- elems v2])
+          
+listaVector :: Num a => [a] -> Vector a
+listaVector xs = array (1, n) (zip [1..n] xs)
+    where
+        n = length xs
+
+
+-- [2.091515,1.0457575,0.52287877,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+
+-- [0.52287877,0.0,0.52287877,0.0,0.0,0.0,0.0,0.0,0.0,0.52287877]
