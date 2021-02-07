@@ -3,10 +3,14 @@ import System.IO (readFile, print)
 import System.Environment (getArgs)
 import System.Directory (doesDirectoryExist, listDirectory)
 import Tokenizer as Tk
+import DocVector as Dv
 import System.Directory.Recursive (getFilesRecursive)
 import System.FilePath ((</>), splitDirectories)
 import Control.Monad (filterM)
 import System.Random
+
+
+
 
 main0 :: IO ()
 main0 = do
@@ -31,7 +35,11 @@ main0 = do
             contents <- traverse readFile ficheros
             -- Creamos el conjunto de entrenamiento
             let x_train = [Tk.toList (contents!!i) | i <- [0..length contents - 1]]
-            print x_train
+            --print x_train
+            --let ndp = numDocPalabra x_train "see"
+            --print ndp
+            let pesos = pesosEnDocumento x_train
+            print pesos
 
         else
             -- Si no existe la carpeta devolvemo un error
