@@ -7,6 +7,7 @@ import System.Directory.Recursive (getFilesRecursive)
 import System.FilePath ((</>), splitDirectories)
 import Control.Monad (filterM)
 import DocVector as Dv
+import Knn
 
 
 main0 :: IO ()
@@ -35,10 +36,14 @@ main0 = do
             --print x_train
              --let ndp = numDocPalabra x_train "see"
             --print ndp
-            let pesos = pesosEnDocumento x_train
+            --let pesos = matrizLista $ pesosEnDocumento x_train
+            --print pesos
             let v1 = [0.52287877,0.0,0.52287877,0.0,0.0,0.0,0.0,0.0,0.0,0.52287877]
-            let vecinos = Dv.obtieneVecinos pesos v1 6
-            print vecinos
+            let v2 = [2.091515,1.0457575,0.52287877,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+            let vecinos = obtieneVecinos x_train v1
+            let zipped = zip x_train y_train
+            let clases = obtieneClases vecinos zipped 5
+            print clases
             --let s = map snd productos
             --print s
             --print $ Dv.matrizLista pesos
