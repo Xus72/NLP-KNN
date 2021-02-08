@@ -3,12 +3,17 @@ module DocVector
 , numDocPalabra
 , freqDocInversa
 , pesoEnDocumento
-,pesosEnDocumento
+, pesosEnDocumento
 , matrizLista
+, listaVector
+, obtieneVecinos
+, prodEscalar
 ) where
 
 import Types
 import Data.Array
+import Data.List (sortBy)
+import Data.Function (on)
 
 frequencyWordDoc :: Documento -> String -> Int
 frequencyWordDoc doc pal = foldl (\acc x -> if pal == x then acc + 1 else acc) 0 doc
@@ -63,7 +68,18 @@ prodEscalar :: Floating a => Vector a -> Vector a -> a
 prodEscalar v1 v2 = a/b 
     where a = sum [i*j | (i,j) <- zip (elems v1) (elems v2)]
           b = sqrt(sum [i^2 | i <- elems v1]) * sqrt(sum [i^2 | i <- elems v2])
-          
+
+obtieneVecinos matriz doc n
+    | n > length (matrizLista matriz) = obtieneVecinos matriz doc (length (matrizLista matriz))
+    | otherwise = take n ordenada
+        where ls = zip (matrizLista matriz) [1..]
+              lss = map (\(i,j) -> (i, prodEscalar (listaVector i) (listaVector doc))) ls
+              ordenada = mySort lss
+
+
+mySort :: Ord b => [(a, b)] -> [(a, b)]
+mySort = sortBy (flip compare `on` snd)
+
 listaVector :: Num a => [a] -> Vector a
 listaVector xs = array (1, n) (zip [1..n] xs)
     where

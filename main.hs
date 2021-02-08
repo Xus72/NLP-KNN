@@ -36,7 +36,12 @@ main0 = do
              --let ndp = numDocPalabra x_train "see"
             --print ndp
             let pesos = pesosEnDocumento x_train
-            print $ Dv.matrizLista pesos
+            let v1 = [0.52287877,0.0,0.52287877,0.0,0.0,0.0,0.0,0.0,0.0,0.52287877]
+            let vecinos = Dv.obtieneVecinos pesos v1 6
+            print vecinos
+            --let s = map snd productos
+            --print s
+            --print $ Dv.matrizLista pesos
         else
             -- Si no existe la carpeta devolvemo un error
             putStrLn ("El directorio " ++ carpeta ++ " no existe")
