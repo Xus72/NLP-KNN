@@ -24,7 +24,15 @@ simDoc train doc = ordenaPorSegundoElemento d
 --              lss = map (\i -> prodEscalar (listaVector i) (listaVector doc)) ls
 --              tuplas = zip corp lss
 
-obtieneClases tuplas zip n = take n [i | (x,y) <- tuplas, (j,i) <- zip, x == j]
+obtieneClases :: (Ord a, Floating a) => Matriz a -> Matriz a -> [Int] -> [[Int]]
+obtieneClases xtrain xtest ytrain = [obtieneClase xtrain (colMat i xtest) ytrain| i <- [1..snd(snd(bounds xtest))]]
+
+obtieneClase :: (Ord a, Floating a) => Matriz a -> Vector a -> [Int] -> [Int]
+obtieneClase xtrain doc ytrain = [ytrain!!(j-1) | j <- pr]
+      where pr = [fst p | p <- sim]
+            sim = [similitud (colMat i xtrain) doc | i <- [1..columnas]]
+            d = zip [1..columnas] sim
+            columnas = snd(snd(bounds xtrain))
 
 
 obtieneClaseMayoritaria :: [Int] -> Int
