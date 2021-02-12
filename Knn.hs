@@ -1,6 +1,9 @@
 module Knn
 ( obtieneDistancia
 , obtieneClaseMayoritaria
+, obtieneListasClases
+, obtieneClasesMayoritarias
+, obtienePrecision
 ) where
 
 import Types
@@ -24,23 +27,33 @@ simDoc train doc = ordenaPorSegundoElemento d
 --              lss = map (\i -> prodEscalar (listaVector i) (listaVector doc)) ls
 --              tuplas = zip corp lss
 
-obtieneClases :: (Ord a, Floating a) => Matriz a -> Matriz a -> [Int] -> [[Int]]
-obtieneClases xtrain xtest ytrain = [obtieneClase xtrain (colMat i xtest) ytrain| i <- [1..snd(snd(bounds xtest))]]
+obtieneListasClases :: (Ord a, Floating a) => Matriz a -> Matriz a -> [Int] -> [[Int]]
+obtieneListasClases xtrain xtest ytrain = [take 5 $ obtieneClases xtrain (colMat i xtest) ytrain | i <- [1..snd(snd(bounds xtest))]]
 
-obtieneClase :: (Ord a, Floating a) => Matriz a -> Vector a -> [Int] -> [Int]
-obtieneClase xtrain doc ytrain = [ytrain!!(j-1) | j <- pr]
+obtieneClases :: (Ord a, Floating a) => Matriz a -> Vector a -> [Int] -> [Int]
+obtieneClases pesos doc ytrain = [ytrain!!(j-1) | j <- pr]
       where pr = [fst p | p <- sim]
-            sim = [similitud (colMat i xtrain) doc | i <- [1..columnas]]
-            d = zip [1..columnas] sim
-            columnas = snd(snd(bounds xtrain))
+            --sim = [similitud (colMat i pesos) doc | i <- [1..columnas]]
+            sim = simDoc pesos doc
+            --d = zip [1..columnas] sim
+            --columnas = snd(snd(bounds pesos))
 
 
 obtieneClaseMayoritaria :: [Int] -> Int
 obtieneClaseMayoritaria ls = if uncurry (>) tupla then 0 else 1
       where tupla = foldl (\(j,k) x -> if x == 1 then (j,k+1) else (j+1,k)) (0,0) ls
 
+obtieneClasesMayoritarias :: [[Int]] -> [Int]
+obtieneClasesMayoritarias lss = map obtieneClaseMayoritaria lss
+
 ordenaPorSegundoElemento :: Ord b => [(a, b)] -> [(a, b)]
 ordenaPorSegundoElemento = sortBy (flip compare `on` snd)
+
+obtienePrecision :: [Int] -> [Int] -> Float
+obtienePrecision resultados ytrain = (fromIntegral a) / (fromIntegral b)
+      where b = length ytest
+            zipped = zip resultados ytest
+            a = foldl (\acc x -> if uncurry (==) x then acc + 1 else acc) 0 zipped
 
 similitud :: (Floating a, Eq a) => Vector a -> Vector a -> a
 similitud v1 v2

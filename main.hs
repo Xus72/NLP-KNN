@@ -42,10 +42,13 @@ main0 = do
             --let v1 = [0.52287877,0.0,0.52287877,0.0,0.0,0.0,0.0,0.0,0.0,0.52287877]
             --let v1 = array (1,10) [(1,2.091515),(2,1.0457575),(3,0.52287877),(4,0.0),(5,0.0),(6,0.0),(7,0.0),(8,0.0),(9,0.0),(10,0.0)]
             --let v2 = [2.091515,1.0457575,0.52287877,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-            let dist = obtieneDistancia pesos pesos 
-            let zipped = zip dist y_train
+            let clases = obtieneListasClases pesos pesos y_train
+            let sol = obtieneClasesMayoritarias clases
+            --let zipped = zip dist y_train
             --let clases = vecinos zipped
-            print clases
+            print sol
+            let precision = obtienePrecision sol y_train
+            print precision
             --let s = map snd product
             --print $ Dv.matrizLista pesos
         else
