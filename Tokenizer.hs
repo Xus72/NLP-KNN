@@ -26,7 +26,7 @@ stripTags (x : xs)   = x : stripTags xs
 
 --Eliminamos los signos de puntuación y los carácteres especiales
 limpiarDatos :: String -> String
-limpiarDatos xs = [ x | x <- noTag, not (x `elem` "(),.?!:;\"\'")]
+limpiarDatos xs = [ x | x <- noTag, not (x `elem` "-$%(),.?!:;\"\'")]
     where noTag = stripTags xs
 
 --Pasamos el texto a minúsculas
@@ -35,14 +35,14 @@ pasarAMinusculas xs = map toLower xs
 
 
 
-toList :: String -> Documento
+toList :: String -> Documento 
 toList xs = filter (\x -> not (x `elem` mostUsedWords)) ls
     where ls = words minus
           ld = limpiarDatos xs
           minus = pasarAMinusculas ld
 
 mostUsedWords :: [String]
-mostUsedWords = [ "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you"
+mostUsedWords = ["i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you"
      , "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she"
      , "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs"
      , "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am"

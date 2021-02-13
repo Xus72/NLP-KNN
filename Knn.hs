@@ -27,10 +27,10 @@ simDoc train doc = ordenaPorSegundoElemento d
 --              lss = map (\i -> prodEscalar (listaVector i) (listaVector doc)) ls
 --              tuplas = zip corp lss
 
-obtieneListasClases :: (Ord a, Floating a) => Matriz a -> Matriz a -> [Int] -> [[Int]]
-obtieneListasClases xtrain xtest ytrain = [take 5 $ obtieneClases xtrain (colMat i xtest) ytrain | i <- [1..snd(snd(bounds xtest))]]
+obtieneListasClases :: (Ord a, Floating a) => Matriz a -> Matriz a -> [Integer] -> Int -> [[Integer]]
+obtieneListasClases xtrain xtest ytrain k = [take k $ obtieneClases xtrain (colMat i xtest) ytrain | i <- [1..snd(snd(bounds xtest))]]
 
-obtieneClases :: (Ord a, Floating a) => Matriz a -> Vector a -> [Int] -> [Int]
+obtieneClases :: (Ord a, Floating a) => Matriz a -> Vector a -> [Integer ] -> [Integer ]
 obtieneClases pesos doc ytrain = [ytrain!!(j-1) | j <- pr]
       where pr = [fst p | p <- sim]
             --sim = [similitud (colMat i pesos) doc | i <- [1..columnas]]
@@ -39,18 +39,18 @@ obtieneClases pesos doc ytrain = [ytrain!!(j-1) | j <- pr]
             --columnas = snd(snd(bounds pesos))
 
 
-obtieneClaseMayoritaria :: [Int] -> Int
+obtieneClaseMayoritaria :: [Integer] -> Integer 
 obtieneClaseMayoritaria ls = if uncurry (>) tupla then 0 else 1
       where tupla = foldl (\(j,k) x -> if x == 1 then (j,k+1) else (j+1,k)) (0,0) ls
 
-obtieneClasesMayoritarias :: [[Int]] -> [Int]
+obtieneClasesMayoritarias :: [[Integer]] -> [Integer]
 obtieneClasesMayoritarias lss = map obtieneClaseMayoritaria lss
 
 ordenaPorSegundoElemento :: Ord b => [(a, b)] -> [(a, b)]
 ordenaPorSegundoElemento = sortBy (flip compare `on` snd)
 
-obtienePrecision :: [Int] -> [Int] -> Float
-obtienePrecision resultados ytrain = (fromIntegral a) / (fromIntegral b)
+obtienePrecision :: [Integer] -> [Integer] -> Float
+obtienePrecision resultados ytest = (fromIntegral a) / (fromIntegral b)
       where b = length ytest
             zipped = zip resultados ytest
             a = foldl (\acc x -> if uncurry (==) x then acc + 1 else acc) 0 zipped

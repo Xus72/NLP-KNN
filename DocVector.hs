@@ -32,7 +32,7 @@ pesoEnDocumento corp pal = map (* freqi) ls --listArray (1, n) ls'
           --n = length ls'
           freqi = freqDocInversa corp pal
 
-pesosEnDocumento :: Corpus a -> Matriz Float
+pesosEnDocumento :: [Documento ] -> Matriz Float
 pesosEnDocumento corp = listaMatriz ls
     where ls = [pesoEnDocumento corp x | x <- removeDuplicates2 (concat corp)]
 
