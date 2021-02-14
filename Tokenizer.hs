@@ -7,34 +7,39 @@
 ------------------------------------------------------------------
 
 module Tokenizer
-( stripTags
+( eliminaTags
 , limpiarDatos
 , pasarAMinusculas
 , toList
 ) where
 
 import Data.Array
-import Data.Char (toLower)
-import Types
+import Data.Char (toLower, isDigit)
+import Types ( Documento )
 
 --Funcion para eliminar los tags web
-stripTags :: String -> String
-stripTags []         = []
-stripTags ('<' : x:xs) = stripTags $ drop 1 $ dropWhile (/= '>') xs
-stripTags (x : xs)   = x : stripTags xs
+eliminaTags :: String -> String
+eliminaTags []         = []
+eliminaTags ('<' : x:xs) = eliminaTags $ drop 1 $ dropWhile (/= '>') xs
+eliminaTags (x : xs)   = x : eliminaTags xs
 
 
---Eliminamos los signos de puntuación y los carácteres especiales
+-- Función que elimina los signos de puntuación, los caracteres especiales y los tags
 limpiarDatos :: String -> String
-limpiarDatos xs = [ x | x <- noTag, not (x `elem` "-$%(),.?!:;\"\'")]
-    where noTag = stripTags xs
+limpiarDatos xs = [ x | x <- noDig, not (x `elem` "-$%(),.?!:;/\"\'")]
+    where noDig = eliminaDigitos noTag
+          noTag = eliminaTags xs
+
+--Funcion que elimina los dígitos
+eliminaDigitos :: String -> String 
+eliminaDigitos xs = [x | x <- xs, not (x `elem` "0123456789")]
 
 --Pasamos el texto a minúsculas
 pasarAMinusculas :: String -> String
 pasarAMinusculas xs = map toLower xs
 
 
-
+-- Función que elimina las stopWords y devuelve el resultado de limpiar los datos 
 toList :: String -> Documento 
 toList xs = filter (\x -> not (x `elem` mostUsedWords)) ls
     where ls = words minus
